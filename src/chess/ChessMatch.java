@@ -17,6 +17,7 @@ import chess.pieces.Rook;
 public class ChessMatch {
 	
 	private int turn;
+	
 	private Color currentPlayer;
 
 	private Board board;
@@ -34,6 +35,7 @@ public class ChessMatch {
 	
 	public ChessMatch() {
 		
+		//dimensão do tabuleiro
 		board = new Board(8, 8);
 		turn = 1;
 		currentPlayer = Color.WHITE;
@@ -67,6 +69,8 @@ public class ChessMatch {
 	public ChessPiece getPromoted() {
 		return promoted;
 	}
+	
+	//função que retorna as peças de xadrez
 	public ChessPiece[][] getPieces(){
 		
 		ChessPiece [][] mat = new ChessPiece[board.getRows()][board.getColumns()];
@@ -85,6 +89,7 @@ public class ChessMatch {
 		return board.piece(position).possibleMoves();
 	}
 	
+	//função que mostras os possiveis movimentos e a movimentação da peça
 	public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
 		
 		Position source = sourcePosition.toPosition();
@@ -95,6 +100,7 @@ public class ChessMatch {
 		
 		Piece capturedPiece = makeMove(source, target);
 		
+		//função que verifica se o proprio jogador se colocou em check e desfaz o movimento
 		if(testCheck(currentPlayer)) {
 			undoMove(source, target, capturedPiece);
 			throw new ChessException("You can't put yourself in check.");
@@ -112,8 +118,10 @@ public class ChessMatch {
 			}
 		}
 		
+		//verifica se o oponente ficou em check depois da jogada
 		check = (testCheck(opponent(currentPlayer))) ? true: false;
 		
+		//verifica se o jogo acabou com o checkmate
 		if (testCheckMate(opponent(currentPlayer))) {
 			checkMate = true;
 		}
@@ -153,6 +161,7 @@ public class ChessMatch {
 		
 	}
 	
+	//função que retorna a peça escolhida para promoção
 	private ChessPiece newPiece(String type, Color color) {
 		if(type.equals("B")) return new Bishop(board, color);
 		if(type.equals("C")) return new Knight(board, color);
@@ -161,6 +170,7 @@ public class ChessMatch {
 		return new Rook(board, color);
 	}
 	
+	//função que valida a posição pra mover
 	private void validateSourcePosition(Position position) {
 		if(!board.thereIsAPiece(position)) {
 			throw new ChessException("There is no piece on source position.");
@@ -173,6 +183,7 @@ public class ChessMatch {
 		}
 	}
 	
+	//função que valida a posição onde esta se movendo
 	private void validateTargetPosition(Position source, Position target) {
 		
 		if(!board.piece(source).possibleMove(target)) {
@@ -180,14 +191,22 @@ public class ChessMatch {
 		}
 	}
 	
+	//função que faz a movimentação da peça
 	private Piece makeMove(Position source, Position target) {
 		
+		//remove a peça na posição que esta(a peça que esta movimentando)
 		ChessPiece p = (ChessPiece)board.removePiece(source);
+		
+		//contador de movimento da peça
 		p.increaseMoveCount();
 		
+		//remove a peça na posição que esta(peça que talvez esteja sendo capturada)
 		Piece capturedPiece = board.removePiece(target);
+		
+		//coloca a peça no lugar(coloca a peça no lugar em que esta movimentando)
 		board.placePiece(p, target);
 		
+		//verifica se a peça foi capturada, se foi remove e add na lista de capturadas.
 		if(capturedPiece != null) {
 			piecesOnTheBoard.remove(capturedPiece);
 			capturedPieces.add(capturedPiece);
@@ -230,13 +249,18 @@ public class ChessMatch {
 		return capturedPiece;
 	}
 	
+	//função para desfazer um movimento
 	private void undoMove(Position source, Position target, Piece capturedPiece) {
 		
+		
 		ChessPiece p = (ChessPiece)board.removePiece(target);
+		
+		//decrementa os movimentos da peça
 		board.placePiece(p,source);
 		
 		p.decreaseMoveCount();
 		
+		//funçao que verifica se uma peça foi capturada e devolve para o lugar quando voltando o movimento.
 		if(capturedPiece !=null) {
 			board.placePiece(capturedPiece, target);
 			capturedPieces.remove(capturedPiece);
@@ -280,16 +304,19 @@ public class ChessMatch {
 		
 	}
 	
+	//função para instanciar as coordenas do xadrez
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
 		
 		board.placePiece(piece, new ChessPosition(column,row).toPosition());
 		piecesOnTheBoard.add(piece);
 	}
 	
+	//função para mostrar a cor do oponente
 	private Color opponent(Color color) {
 		return (color ==Color.WHITE) ? Color.BLACK : Color.WHITE;
 	}
 	
+	//função para localizar o King de uma determina cor
 	private ChessPiece king(Color color) {
 		
 		List<Piece> list = piecesOnTheBoard.stream().filter(x->((ChessPiece)x).getColor()==color).collect(Collectors.toList());
@@ -301,12 +328,15 @@ public class ChessMatch {
 		throw new IllegalStateException("There is no" + color + "King on the board.");
 	}
 	
+	//função para testar se algum king esta em check
 	private boolean testCheck(Color color) {
 		
+		//pega a posição do king
 		Position kingPosition = king(color).getChessPosition().toPosition();
 		
 		List<Piece> opponentPieces = piecesOnTheBoard.stream().filter(x->((ChessPiece)x).getColor()==opponent(color)).collect(Collectors.toList());
 		
+		//verifica se alguma peça tem a possibilidade de capturar o King do oponente
 		for(Piece p: opponentPieces) {
 			
 			boolean [][] mat = p.possibleMoves();
@@ -319,21 +349,36 @@ public class ChessMatch {
 		return false;
 	}
 	
+	//função de verificação do checkmate
 	private boolean testCheckMate(Color color) {
+		
+		//verifica se esta em check
 		if (!testCheck(color)) {
 			return false;
 		}
+		
 		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
+		
+		//verifica se as peças tem algum movimento para tirar o check
 		for (Piece p : list) {
+			
+			//pega os possiveis movimentos da peça(p)
 			boolean[][] mat = p.possibleMoves();
 			for (int i=0; i<board.getRows(); i++) {
 				for (int j=0; j<board.getColumns(); j++) {
+					
+					//verifica se o movimento tira o check
 					if (mat[i][j]) {
 						Position source = ((ChessPiece)p).getChessPosition().toPosition();
 						Position target = new Position(i, j);
+						
+						//faz o movimento para testar o check
 						Piece capturedPiece = makeMove(source, target);
+						//testa se o king ainda esta em check
 						boolean testCheck = testCheck(color);
+						//volta o movimento pois estava so testando
 						undoMove(source, target, capturedPiece);
+						//verifica se o king ainda fica em check com o movimento.
 						if (!testCheck) {
 							return false;
 						}
@@ -341,15 +386,17 @@ public class ChessMatch {
 				}
 			}
 		}
+		//se o for terminar significa que deu checkmate
 		return true;
 	}
 	
-	
+	//função para troca de jogador
 	private void nextTurn() {
 		turn++;
 		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
 	}
 	
+	//coloca as peças iniciais do jogo
 	private void initialSetup() {
 	   placeNewPiece('a', 1, new Rook(board, Color.WHITE));
 	   placeNewPiece('b', 1, new Knight(board, Color.WHITE));

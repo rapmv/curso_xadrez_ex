@@ -13,6 +13,7 @@ import chess.Color;
 
 public class UI {
 	
+	 //deixa as peças com cores diferentes
 	// https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
 
 	public static final String ANSI_RESET = "\u001B[0m";
@@ -34,27 +35,31 @@ public class UI {
 	public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
 	public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
 	
+	
+	
+	//Limpa toda a tela
 	// https://stackoverflow.com/questions/2979383/java-clear-the-console
 	public static void clearScreen() {
 		System.out.println("\033[H\033[2J");
 		System.out.flush();
 	}
 	
-	
+	//função para ver a posição da peça no xadrez.
 	public static ChessPosition readChessPosition(Scanner sc) {
 		
 		try {
-		String s = sc.nextLine();
-		char column = s.charAt(0);
-		int row = Integer.parseInt(s.substring(1));
-		
-		return new ChessPosition(column, row);
+			String s = sc.nextLine();
+			char column = s.charAt(0);
+			int row = Integer.parseInt(s.substring(1));
+			
+			return new ChessPosition(column, row);
 		}
 		catch(RuntimeException e) {
 			throw new InputMismatchException("Erro reading ChessPosition. Valid values are from a1 to h8.");
 		}
 	}
 	
+	//função com informações do jogo
 	public static void printMatch(ChessMatch chessMatch, List<ChessPiece> captured) {
 		
 		printBoard(chessMatch.getPieces());
@@ -78,6 +83,7 @@ public class UI {
 		
 	}
 
+	//funçao que imprimi o tabuleiro
 	public static void printBoard(ChessPiece[][] pieces) {
 		
 		for(int i=0; i<pieces.length; i++) {
@@ -91,6 +97,7 @@ public class UI {
 		System.out.println("  a b c d e f g h");
 	}
 	
+	//função que retorna o tabuleiro e as peças com as posições possiveis
 	public static void printBoard(ChessPiece[][] pieces, boolean [][] possibleMoves) {
 			
 		for (int i = 0; i < pieces.length; i++) {
@@ -104,6 +111,7 @@ public class UI {
 		System.out.println("  a b c d e f g h");
 	}
 	
+	//função para imprimir uma unica peça
 	private static void printPiece(ChessPiece piece, boolean background) {
 		
 		if(background) {
@@ -114,15 +122,20 @@ public class UI {
 		}
 		else {
 			 if (piece.getColor() == Color.WHITE) {
+				 
+				 	//colore a peça no tabuleiro.
 	                System.out.print(ANSI_WHITE + piece + ANSI_RESET);
 	            }
 	            else {
+	            	
+	            	//colore a peça no tabuleiro.
 	                System.out.print(ANSI_YELLOW + piece + ANSI_RESET);
 	            }
 		}
 		System.out.print(" ");
 	}
 	
+	//função que mostra as peças capturadas de cada oponente.
 	private static void printCapturedPieces(List<ChessPiece> captured) {
 		
 		List<ChessPiece> white = captured.stream().filter(x-> x.getColor() == Color.WHITE).collect(Collectors.toList());
@@ -131,12 +144,12 @@ public class UI {
 		System.out.println("Captured pieces: ");
 		System.out.print("White: ");
 		System.out.print(ANSI_WHITE);
-		System.out.println(Arrays.deepToString(white.toArray()));
+		System.out.println(Arrays.toString(white.toArray()));
 		System.out.println(ANSI_RESET);
 		
 		System.out.print("Black: ");
 		System.out.print(ANSI_YELLOW);
-		System.out.println(Arrays.deepToString(black.toArray()));
+		System.out.println(Arrays.toString(black.toArray()));
 		System.out.println(ANSI_RESET);
 	}
 	

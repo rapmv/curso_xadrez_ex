@@ -16,6 +16,7 @@ public class Rook extends ChessPiece{
 		return "R";
 	}
 	
+	//função com as movimentações da torre
 	@Override
 	public boolean[][] possibleMoves() {
 		

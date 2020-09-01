@@ -20,6 +20,7 @@ public class Program {
 		
 		List<ChessPiece> captured = new ArrayList<>();
 		
+		//repete enquanto não tiver um CheckMate
 		while (!chessMatch.getCheckMate()) {
 			
 			try {
@@ -33,7 +34,10 @@ public class Program {
 				ChessPosition source = UI.readChessPosition(sc);
 				
 				boolean[][] possibleMoves = chessMatch.possibleMoves(source);
+				
 				UI.clearScreen();
+				
+				//imprimi o tabuleiro junto com as peças e mais as possiveis movimentações da peça
 				UI.printBoard(chessMatch.getPieces(), possibleMoves);
 				
 				System.out.println();
@@ -46,6 +50,7 @@ public class Program {
 					captured.add(capturedPiece);
 				}
 				
+				//verificação pra quando a peça e promovida
 				if(chessMatch.getPromoted() != null) {
 					System.out.print("Enter piece for promotion (B/C/R/Q): ");					
 					String type = sc.nextLine().toUpperCase();

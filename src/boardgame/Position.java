@@ -2,7 +2,9 @@ package boardgame;
 
 public class Position {
 
+	//linha
 	private int row;
+	//coluna
 	private int column;
 	
 	public Position(int row, int column) {

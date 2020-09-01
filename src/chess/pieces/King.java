@@ -20,6 +20,7 @@ public class King extends ChessPiece{
 		return "K";
 	}
 	
+	//função que mostra se o King pode mover ou não
 	private boolean canMove(Position position) {
 		ChessPiece p = (ChessPiece)getBoard().piece(position);
 		return p==null || p.getColor() != getColor();
@@ -30,6 +31,7 @@ public class King extends ChessPiece{
 		return p!=null && p instanceof Rook && p.getColor() == getColor() && p.getMoveCount() == 0;
 	}
 	
+	//função com as movimentações do rei
 	@Override
 	public boolean[][] possibleMoves() {
 		
